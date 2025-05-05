@@ -1,26 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { useGetUserQuery, useUpdateUserPreferencesMutation } from '../../store/services/apiSlice';
 import { updatePreferences } from '../../store/slices/authSlice';
 import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import { FiUser, FiMail, FiSettings, FiCreditCard, FiAlertCircle, FiCheck } from 'react-icons/fi';
 import Link from 'next/link';
+import { FiUser, FiMail, FiCreditCard } from 'react-icons/fi';
+import UserSettingsPanel from '../../components/ui/UserSettingsPanel';
+import { UserPreferences } from '../../types';
 
 const categories = [
-  'Politics',
-  'Economy',
-  'Technology',
-  'Science',
-  'Health',
-  'Sports',
-  'Entertainment',
-  'World',
+  { id: 'politics', name: 'Politics' },
+  { id: 'economy', name: 'Economy' },
+  { id: 'technology', name: 'Technology' },
+  { id: 'science', name: 'Science' },
+  { id: 'health', name: 'Health' },
+  { id: 'sports', name: 'Sports' },
+  { id: 'entertainment', name: 'Entertainment' },
+  { id: 'world', name: 'World' },
 ];
 
 export default function ProfilePage() {
@@ -32,11 +32,6 @@ export default function ProfilePage() {
   });
   
   const [updateUserPreferences, { isLoading: isUpdating }] = useUpdateUserPreferencesMutation();
-  
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [darkMode, setDarkMode] = useState(false);
-  const [emailNotifications, setEmailNotifications] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -45,38 +40,13 @@ export default function ProfilePage() {
     }
   }, [isLoading, isAuthenticated, router]);
 
-  // Set initial values from user data
-  useEffect(() => {
-    if (user?.preferences) {
-      setSelectedCategories(user.preferences.categories || []);
-      setDarkMode(user.preferences.darkMode || false);
-      setEmailNotifications(user.preferences.emailNotifications || false);
-    }
-  }, [user]);
-
-  const handleCategoryToggle = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
-  };
-
-  const handleSavePreferences = async () => {
+  const handleSavePreferences = async (preferences: UserPreferences) => {
     try {
-      const updatedPreferences = {
-        categories: selectedCategories,
-        darkMode,
-        emailNotifications,
-      };
-      
-      const result = await updateUserPreferences(updatedPreferences).unwrap();
-      dispatch(updatePreferences(updatedPreferences));
-      
-      setSuccessMessage('Preferences updated successfully');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      await updateUserPreferences(preferences).unwrap();
+      dispatch(updatePreferences(preferences));
     } catch (error) {
       console.error('Failed to update preferences', error);
+      throw error;
     }
   };
 
@@ -134,113 +104,18 @@ export default function ProfilePage() {
         <button className="px-4 py-2 border-b-2 border-primary text-primary font-medium">
           Preferences
         </button>
-        <Link href="/subscription" className="px-4 py-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+        <Link href="/subscription" className="px-4 py-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 flex items-center">
+          <FiCreditCard className="mr-1" size={16} />
           Subscription
         </Link>
       </div>
 
-      {/* Success Message */}
-      {successMessage && (
-        <div className="mb-6 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md flex items-start">
-          <FiCheck className="text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-          <p className="text-sm text-green-600 dark:text-green-400">{successMessage}</p>
-        </div>
-      )}
-
-      {/* Preferences Form */}
-      <Card variant="bordered">
-        <div className="p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-            <FiSettings className="mr-2" />
-            Preferences
-          </h2>
-
-          <div className="space-y-8">
-            {/* Categories */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                Preferred Categories
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Select categories you're interested in to personalize your news feed.
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {categories.map((category) => (
-                  <div key={category} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={`category-${category}`}
-                      checked={selectedCategories.includes(category)}
-                      onChange={() => handleCategoryToggle(category)}
-                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 dark:border-gray-700 rounded"
-                    />
-                    <label
-                      htmlFor={`category-${category}`}
-                      className="ml-2 text-sm text-gray-700 dark:text-gray-300"
-                    >
-                      {category}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Display Settings */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                Display Settings
-              </h3>
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="darkMode"
-                  checked={darkMode}
-                  onChange={() => setDarkMode(!darkMode)}
-                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300 dark:border-gray-700 rounded"
-                />
-                <label
-                  htmlFor="darkMode"
-                  className="ml-2 text-sm text-gray-700 dark:text-gray-300"
-                >
-                  Enable dark mode by default
-                </label>
-              </div>
-            </div>
-
-            {/* Notification Settings */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                Notification Settings
-              </h3>
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="emailNotifications"
-                  checked={emailNotifications}
-                  onChange={() => setEmailNotifications(!emailNotifications)}
-                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300 dark:border-gray-700 rounded"
-                />
-                <label
-                  htmlFor="emailNotifications"
-                  className="ml-2 text-sm text-gray-700 dark:text-gray-300"
-                >
-                  Receive email notifications for new articles in your preferred categories
-                </label>
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <Button
-                onClick={handleSavePreferences}
-                isLoading={isUpdating}
-              >
-                Save Preferences
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Card>
+      {/* User Settings Panel */}
+      <UserSettingsPanel
+        preferences={user?.preferences || { categories: [], darkMode: false, emailNotifications: false }}
+        categories={categories}
+        onSave={handleSavePreferences}
+      />
     </div>
   );
 }
-
