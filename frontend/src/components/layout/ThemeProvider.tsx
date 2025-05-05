@@ -1,53 +1,59 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
-
-type Theme = 'light' | 'dark';
+import { createContext, useContext, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
+import { setSystemPreference } from '../../store/slices/themeSlice';
 
 interface ThemeContextType {
-  theme: Theme;
+  theme: 'light' | 'dark';
   toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  const dispatch = useAppDispatch();
+  const { mode, systemPreference } = useAppSelector((state) => state.theme);
+  
+  // Determine the actual theme based on mode and system preference
+  const actualTheme = mode === 'system' ? systemPreference : mode;
 
   useEffect(() => {
-    // Check for user preference in localStorage
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
+    // Listen for system preference changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
-    // Check for system preference if no saved preference
-    if (!savedTheme) {
-      const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light';
-      setTheme(systemPreference);
-      localStorage.setItem('theme', systemPreference);
-    } else {
-      setTheme(savedTheme);
-    }
-  }, []);
+    const handleChange = (e: MediaQueryListEvent) => {
+      dispatch(setSystemPreference(e.matches ? 'dark' : 'light'));
+    };
+    
+    // Set initial system preference
+    dispatch(setSystemPreference(mediaQuery.matches ? 'dark' : 'light'));
+    
+    // Add listener for changes
+    mediaQuery.addEventListener('change', handleChange);
+    
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     // Update the document class when theme changes
-    if (theme === 'dark') {
+    if (actualTheme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    
-    // Save to localStorage
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  }, [actualTheme]);
 
+  // We'll use the toggleTheme action from our Redux slice
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+    // This will be handled by a component that uses the Redux action directly
+    // We keep this context API for backward compatibility
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme: actualTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -60,4 +66,3 @@ export function useTheme() {
   }
   return context;
 }
-
