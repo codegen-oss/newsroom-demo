@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import StoreProvider from '../components/StoreProvider';
+import MainLayout from '../components/layout/MainLayout';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -17,9 +19,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans`}>
-        {children}
+        <StoreProvider>
+          <MainLayout>
+            {children}
+          </MainLayout>
+        </StoreProvider>
       </body>
     </html>
   );
 }
-
