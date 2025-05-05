@@ -1,0 +1,27 @@
+# Web framework and server
+fastapi>=0.95.0
+uvicorn>=0.21.1
+
+# Database ORM
+sqlalchemy>=2.0.0
+alembic>=1.10.0
+
+# Data validation
+pydantic>=1.10.0
+
+# Authentication
+pyjwt>=2.6.0
+passlib>=1.7.4
+python-jose>=3.3.0
+python-multipart>=0.0.6  # For form data parsing
+
+# HTTP client
+requests>=2.28.0
+
+# Additional utilities
+python-dotenv>=1.0.0
+email-validator>=2.0.0
+
+# Modal
+modal>=0.53.0
+
