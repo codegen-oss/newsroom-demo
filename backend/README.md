@@ -1,10 +1,8 @@
-# News Room Demo
+# News Room Backend
 
-A demo application for a news room platform with user authentication.
+This is the backend for the News Room application, featuring a complete user authentication system built with FastAPI.
 
-## Backend
-
-The backend is built with FastAPI and provides a complete user authentication system:
+## Features
 
 - User registration and login
 - JWT token authentication
@@ -12,7 +10,7 @@ The backend is built with FastAPI and provides a complete user authentication sy
 - User profile management
 - Password reset functionality
 
-### Technical Stack
+## Technical Stack
 
 - FastAPI: Modern, fast web framework for building APIs
 - SQLAlchemy: SQL toolkit and ORM
@@ -21,37 +19,22 @@ The backend is built with FastAPI and provides a complete user authentication sy
 - Passlib: Password hashing
 - SQLite: Database
 
-### Setup and Installation
+## Setup and Installation
 
-1. Navigate to the backend directory:
-   ```
-   cd backend
-   ```
-
-2. Install dependencies:
+1. Install dependencies:
    ```
    pip install -r requirements.txt
    ```
 
-3. Run the application:
+2. Run the application:
    ```
    python run.py
    ```
 
-4. Access the API documentation:
+3. Access the API documentation:
    ```
    http://localhost:8000/docs
    ```
-
-### Using Docker
-
-You can also run the application using Docker:
-
-```
-docker-compose up
-```
-
-This will start the backend service on port 8000.
 
 ## API Endpoints
 
@@ -69,4 +52,15 @@ This will start the backend service on port 8000.
 
 - `POST /api/password-reset/request`: Request password reset
 - `POST /api/password-reset/confirm`: Reset password with token
+
+## Development
+
+The application structure follows modern FastAPI practices:
+
+- `app/main.py`: Main application entry point
+- `app/database.py`: Database connection setup
+- `app/models/`: SQLAlchemy models
+- `app/schemas/`: Pydantic schemas for request/response validation
+- `app/routes/`: API route handlers
+- `app/utils/`: Utility functions including security
 
