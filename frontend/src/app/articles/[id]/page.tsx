@@ -1,12 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { Navbar } from '@/components/Navbar'
-import { Footer } from '@/components/Footer'
-import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
+import Link from 'next/link'
 
 type Article = {
   id: string
@@ -23,210 +21,202 @@ type Article = {
 }
 
 export default function ArticleDetailPage() {
+  const [article, setArticle] = useState<Article | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const { user } = useAuth()
   const params = useParams()
   const router = useRouter()
-  const { user } = useAuth()
-  
-  const [article, setArticle] = useState<Article | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [relatedArticles, setRelatedArticles] = useState<Article[]>([])
-  
+  const id = params.id as string
+
   useEffect(() => {
     const fetchArticle = async () => {
-      setIsLoading(true)
+      setLoading(true)
       try {
-        const response = await api.get(`/articles/${params.id}`)
+        const response = await api.get(`/articles/${id}`)
         setArticle(response.data)
-        
-        // Fetch related articles based on categories
-        if (response.data.categories && response.data.categories.length > 0) {
-          const category = response.data.categories[0]
-          const relatedResponse = await api.get(`/articles?category=${category}&limit=3`)
-          // Filter out the current article
-          setRelatedArticles(
-            relatedResponse.data.filter((a: Article) => a.id !== params.id).slice(0, 3)
-          )
-        }
-        
-        setError(null)
+        setError('')
       } catch (err: any) {
         console.error('Error fetching article:', err)
-        if (err.response && err.response.status === 401) {
-          setError('You need to be logged in to view this article.')
-        } else if (err.response && err.response.status === 403) {
-          setError('You need a higher subscription tier to access this content.')
+        if (err.response && err.response.status === 403) {
+          setError('You do not have access to this article. Please upgrade your subscription.')
         } else {
           setError('Failed to load article. Please try again later.')
         }
       } finally {
-        setIsLoading(false)
+        setLoading(false)
       }
     }
-    
-    if (params.id) {
+
+    if (id) {
       fetchArticle()
     }
-  }, [params.id, user])
-  
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
+  }, [id])
+
+  // Function to determine if user can access article
+  const canAccessArticle = (accessTier: string) => {
+    if (!user) return accessTier === 'free'
+    
+    switch (user.subscriptionTier) {
+      case 'free':
+        return accessTier === 'free'
+      case 'individual':
+        return ['free', 'premium'].includes(accessTier)
+      case 'organization':
+        return true
+      default:
+        return false
+    }
   }
-  
-  return (
-    <>
-      <Navbar />
-      
-      <main className="container mx-auto px-4 py-8">
-        {isLoading ? (
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-            <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-8"></div>
-            <div className="h-64 bg-gray-300 dark:bg-gray-700 rounded mb-8"></div>
-            <div className="space-y-4">
-              <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-full"></div>
-              <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-full"></div>
-              <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-full"></div>
-              <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
-            </div>
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+        <div className="text-center mt-6">
+          <Link href="/articles" className="btn-primary">
+            Back to Articles
+          </Link>
+          {!user && (
+            <Link href="/auth/login" className="btn-secondary ml-4">
+              Login
+            </Link>
+          )}
+          {user && user.subscriptionTier !== 'organization' && (
+            <Link href="/profile" className="btn-secondary ml-4">
+              Upgrade Subscription
+            </Link>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  if (!article) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Article not found</h1>
+          <Link href="/articles" className="btn-primary">
+            Back to Articles
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // Check if user can access this article
+  if (!canAccessArticle(article.access_tier)) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-6">
+            <p className="font-bold">Premium Content</p>
+            <p>This article requires a {article.access_tier} subscription to read.</p>
           </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold mb-4">Access Restricted</h2>
-            <p className="text-red-500 dark:text-red-400 mb-6">{error}</p>
-            {error.includes('logged in') ? (
-              <Link href="/auth/login" className="btn-primary">
-                Sign In
-              </Link>
-            ) : error.includes('subscription') ? (
-              <Link href="/pricing" className="btn-primary">
-                Upgrade Subscription
-              </Link>
-            ) : (
-              <button
-                onClick={() => window.location.reload()}
-                className="btn-primary"
-              >
-                Try Again
-              </button>
-            )}
+          <div className="mb-6">
+            <p className="text-xl text-gray-700">{article.summary}</p>
           </div>
-        ) : article ? (
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-8">
-              <Link href="/articles" className="text-primary-600 dark:text-primary-400 hover:underline">
-                ← Back to Articles
-              </Link>
-            </div>
-            
-            <article>
-              <header className="mb-8">
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">{article.title}</h1>
-                <div className="flex flex-wrap items-center text-gray-500 dark:text-gray-400 mb-4">
-                  <span className="mr-4">{article.author}</span>
-                  <span className="mr-4">•</span>
-                  <span className="mr-4">{formatDate(article.published_at)}</span>
-                  <span className="mr-4">•</span>
-                  <a href={article.source_url} target="_blank" rel="noopener noreferrer" className="hover:text-primary-600 dark:hover:text-primary-400">
-                    {article.source}
-                  </a>
-                  
-                  {article.access_tier !== 'free' && (
-                    <>
-                      <span className="mr-4">•</span>
-                      <span className="px-2 py-1 bg-secondary-100 text-secondary-800 dark:bg-secondary-900 dark:text-secondary-200 text-xs rounded-full">
-                        {article.access_tier.charAt(0).toUpperCase() + article.access_tier.slice(1)} Content
-                      </span>
-                    </>
-                  )}
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {article.categories.map((category) => (
-                    <Link
-                      key={category}
-                      href={`/articles?category=${category}`}
-                      className="px-3 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full text-sm"
-                    >
-                      {category}
-                    </Link>
-                  ))}
-                </div>
-              </header>
-              
-              {article.featured_image && (
-                <div className="mb-8">
-                  <img
-                    src={article.featured_image}
-                    alt={article.title}
-                    className="w-full h-auto rounded-lg"
-                  />
-                </div>
-              )}
-              
-              <div className="prose dark:prose-invert max-w-none">
-                {/* In a real app, you might want to use a rich text renderer here */}
-                <p className="text-lg font-semibold mb-6">{article.summary}</p>
-                <div className="whitespace-pre-line">{article.content}</div>
-              </div>
-            </article>
-            
-            {relatedArticles.length > 0 && (
-              <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-                <h2 className="text-2xl font-bold mb-6">Related Articles</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {relatedArticles.map((relatedArticle) => (
-                    <Link href={`/articles/${relatedArticle.id}`} key={relatedArticle.id} className="card hover:shadow-lg transition-shadow">
-                      <div className="h-40 bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
-                        {relatedArticle.featured_image ? (
-                          <img
-                            src={relatedArticle.featured_image}
-                            alt={relatedArticle.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-gray-500 dark:text-gray-400">No Image</span>
-                          </div>
-                        )}
-                        {relatedArticle.access_tier !== 'free' && (
-                          <div className="absolute top-2 right-2 bg-secondary-500 text-white text-xs px-2 py-1 rounded-full">
-                            {relatedArticle.access_tier.charAt(0).toUpperCase() + relatedArticle.access_tier.slice(1)}
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <h3 className="text-lg font-bold mb-2 line-clamp-2">{relatedArticle.title}</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                          {relatedArticle.author} • {formatDate(relatedArticle.published_at)}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold mb-4">Article Not Found</h2>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">
-              The article you're looking for doesn't exist or has been removed.
-            </p>
-            <Link href="/articles" className="btn-primary">
-              Browse Articles
+          <div className="text-center">
+            <Link href="/profile" className="btn-primary">
+              Upgrade Subscription
+            </Link>
+            <Link href="/articles" className="btn-outline ml-4">
+              Back to Articles
             </Link>
           </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-12">
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-6">
+          <Link href="/articles" className="text-primary-600 hover:underline flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+            </svg>
+            Back to Articles
+          </Link>
+        </div>
+        
+        <div className="flex flex-wrap gap-2 mb-4">
+          {article.categories.map((cat) => (
+            <Link 
+              key={cat} 
+              href={`/articles?category=${cat}`}
+              className="text-xs bg-gray-100 px-2 py-1 rounded"
+            >
+              {cat}
+            </Link>
+          ))}
+          <span className={`text-xs px-2 py-1 rounded text-white ${
+            article.access_tier === 'free' ? 'bg-gray-500' : 
+            article.access_tier === 'premium' ? 'bg-primary-500' : 'bg-secondary-500'
+          }`}>
+            {article.access_tier.charAt(0).toUpperCase() + article.access_tier.slice(1)}
+          </span>
+        </div>
+        
+        <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
+        
+        <div className="flex items-center text-gray-600 mb-6">
+          <span>By {article.author}</span>
+          <span className="mx-2">•</span>
+          <span>{new Date(article.published_at).toLocaleDateString()}</span>
+          <span className="mx-2">•</span>
+          <a href={article.source_url} target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:underline">
+            {article.source}
+          </a>
+        </div>
+        
+        {article.featured_image && (
+          <div className="mb-6">
+            <img 
+              src={article.featured_image} 
+              alt={article.title}
+              className="w-full h-auto rounded"
+            />
+          </div>
         )}
-      </main>
-      
-      <Footer />
-    </>
+        
+        <div className="prose max-w-none">
+          {article.content.split('\n').map((paragraph, index) => (
+            <p key={index} className="mb-4">{paragraph}</p>
+          ))}
+        </div>
+        
+        <div className="mt-8 pt-6 border-t">
+          <h3 className="text-xl font-bold mb-4">Share this article</h3>
+          <div className="flex space-x-4">
+            <button className="btn-outline">
+              Twitter
+            </button>
+            <button className="btn-outline">
+              Facebook
+            </button>
+            <button className="btn-outline">
+              LinkedIn
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

@@ -42,7 +42,7 @@ NewsRoom is a full-stack web application that provides:
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # On Windows: venv\\Scripts\\activate
 pip install -r requirements.txt
 python seed_data.py  # Populate the database with sample data
 uvicorn main:app --reload
@@ -83,4 +83,11 @@ The seed data includes the following test users:
 - **Organization Tier**: 
   - Email: org@example.com
   - Password: password123
+
+## API Documentation
+
+FastAPI automatically generates interactive API documentation:
+
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 

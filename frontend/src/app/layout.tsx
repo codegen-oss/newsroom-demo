@@ -1,24 +1,9 @@
-import type { Metadata } from 'next'
-import { Inter, Roboto_Mono } from 'next/font/google'
+'use client'
+
 import './globals.css'
+import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 import { AuthProvider } from '@/contexts/AuthContext'
-
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-})
-
-const robotoMono = Roboto_Mono({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-roboto-mono',
-})
-
-export const metadata: Metadata = {
-  title: 'NewsRoom - Your Global News Source',
-  description: 'A news aggregation platform focusing on geopolitics, economy, and technology',
-}
 
 export default function RootLayout({
   children,
@@ -26,10 +11,20 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${robotoMono.variable}`}>
-      <body className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <html lang="en">
+      <head>
+        <title>NewsRoom - Stay Informed</title>
+        <meta name="description" content="Your trusted source for geopolitics, economy, and technology news" />
+      </head>
+      <body>
         <AuthProvider>
-          {children}
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-grow">
+              {children}
+            </main>
+            <Footer />
+          </div>
         </AuthProvider>
       </body>
     </html>
