@@ -1,20 +1,20 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, List, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 from datetime import datetime
-from enum import Enum
+from enum import Enum as PyEnum
 
 # Enums
-class SubscriptionTierEnum(str, Enum):
+class SubscriptionTier(str, PyEnum):
     free = "free"
     individual = "individual"
     organization = "organization"
 
-class AccessTierEnum(str, Enum):
+class AccessTier(str, PyEnum):
     free = "free"
     premium = "premium"
     organization = "organization"
 
-class RoleEnum(str, Enum):
+class UserRole(str, PyEnum):
     admin = "admin"
     member = "member"
 
@@ -25,36 +25,37 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    subscription_tier: SubscriptionTierEnum = SubscriptionTierEnum.free
-    preferences: Optional[Dict[str, Any]] = None
+    subscription_tier: SubscriptionTier = SubscriptionTier.free
 
 class UserUpdate(BaseModel):
     display_name: Optional[str] = None
-    subscription_tier: Optional[SubscriptionTierEnum] = None
-    preferences: Optional[Dict[str, Any]] = None
+    subscription_tier: Optional[SubscriptionTier] = None
 
-class UserResponse(UserBase):
+class UserInDB(UserBase):
     id: str
-    subscription_tier: SubscriptionTierEnum
+    subscription_tier: SubscriptionTier
     created_at: datetime
     preferences: Optional[Dict[str, Any]] = None
 
     class Config:
         orm_mode = True
 
-# UserInterest schemas
+class User(UserInDB):
+    pass
+
+# User Interest schemas
 class UserInterestBase(BaseModel):
-    categories: Optional[List[str]] = None
-    regions: Optional[List[str]] = None
-    topics: Optional[List[str]] = None
+    categories: List[str] = []
+    regions: List[str] = []
+    topics: List[str] = []
 
 class UserInterestCreate(UserInterestBase):
-    pass
+    user_id: str
 
 class UserInterestUpdate(UserInterestBase):
     pass
 
-class UserInterestResponse(UserInterestBase):
+class UserInterest(UserInterestBase):
     id: str
     user_id: str
 
@@ -70,11 +71,11 @@ class ArticleBase(BaseModel):
     source_url: str
     author: str
     categories: List[str]
-    access_tier: AccessTierEnum
+    access_tier: AccessTier
     featured_image: Optional[str] = None
 
 class ArticleCreate(ArticleBase):
-    published_at: Optional[datetime] = None
+    pass
 
 class ArticleUpdate(BaseModel):
     title: Optional[str] = None
@@ -84,10 +85,10 @@ class ArticleUpdate(BaseModel):
     source_url: Optional[str] = None
     author: Optional[str] = None
     categories: Optional[List[str]] = None
-    access_tier: Optional[AccessTierEnum] = None
+    access_tier: Optional[AccessTier] = None
     featured_image: Optional[str] = None
 
-class ArticleResponse(ArticleBase):
+class Article(ArticleBase):
     id: str
     published_at: datetime
 
@@ -97,7 +98,7 @@ class ArticleResponse(ArticleBase):
 # Organization schemas
 class OrganizationBase(BaseModel):
     name: str
-    subscription: Dict[str, Any]
+    subscription: Dict[str, Any] = {}
 
 class OrganizationCreate(OrganizationBase):
     pass
@@ -106,26 +107,26 @@ class OrganizationUpdate(BaseModel):
     name: Optional[str] = None
     subscription: Optional[Dict[str, Any]] = None
 
-class OrganizationResponse(OrganizationBase):
+class Organization(OrganizationBase):
     id: str
     created_at: datetime
 
     class Config:
         orm_mode = True
 
-# OrganizationMember schemas
+# Organization Member schemas
 class OrganizationMemberBase(BaseModel):
     organization_id: str
     user_id: str
-    role: RoleEnum
+    role: UserRole = UserRole.member
 
 class OrganizationMemberCreate(OrganizationMemberBase):
     pass
 
 class OrganizationMemberUpdate(BaseModel):
-    role: Optional[RoleEnum] = None
+    role: Optional[UserRole] = None
 
-class OrganizationMemberResponse(OrganizationMemberBase):
+class OrganizationMember(OrganizationMemberBase):
     id: str
 
     class Config:
@@ -138,4 +139,5 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+    user_id: Optional[str] = None
 
