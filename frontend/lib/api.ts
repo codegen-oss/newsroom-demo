@@ -71,6 +71,7 @@ export const articlesApi = {
   createArticle: (article: any) => api.post('/articles', article),
   updateArticle: (id: string, article: any) => api.put(`/articles/${id}`, article),
   deleteArticle: (id: string) => api.delete(`/articles/${id}`),
+  getOrganizationArticles: (orgId: string) => api.get('/articles', { params: { organization_id: orgId } }),
 };
 
 // Organizations endpoints
@@ -79,13 +80,22 @@ export const organizationsApi = {
   getOrganization: (id: string) => api.get(`/organizations/${id}`),
   createOrganization: (org: any) => api.post('/organizations', org),
   updateOrganization: (id: string, org: any) => api.put(`/organizations/${id}`, org),
+  deleteOrganization: (id: string) => api.delete(`/organizations/${id}`),
+  
+  // Member management
   getMembers: (id: string) => api.get(`/organizations/${id}/members`),
   addMember: (id: string, member: any) => api.post(`/organizations/${id}/members`, member),
+  inviteMember: (id: string, invite: any) => api.post(`/organizations/${id}/invite`, invite),
   updateMember: (orgId: string, userId: string, data: any) => 
     api.put(`/organizations/${orgId}/members/${userId}`, data),
   removeMember: (orgId: string, userId: string) => 
     api.delete(`/organizations/${orgId}/members/${userId}`),
+  
+  // Subscription management
+  getSubscription: (id: string) => api.get(`/organizations/${id}/subscription`),
+  createSubscription: (id: string, subscription: any) => api.post(`/organizations/${id}/subscription`, subscription),
+  updateSubscription: (id: string, subscription: any) => api.put(`/organizations/${id}/subscription`, subscription),
+  cancelSubscription: (id: string) => api.delete(`/organizations/${id}/subscription`),
 };
 
 export default api;
-

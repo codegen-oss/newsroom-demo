@@ -1,5 +1,6 @@
-from sqlalchemy import Column, String, DateTime, Enum, JSON, Text
+from sqlalchemy import Column, String, DateTime, Enum, JSON, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 import uuid
 from datetime import datetime
 from ..database.database import Base
@@ -18,4 +19,7 @@ class Article(Base):
     categories = Column(JSON, default=[])
     access_tier = Column(Enum('free', 'premium', 'organization', name='access_tier_enum'), default='free')
     featured_image = Column(String, nullable=True)
-
+    organization_id = Column(String, ForeignKey("organizations.id"), nullable=True)
+    
+    # Relationships
+    organization = relationship("Organization", back_populates="articles")

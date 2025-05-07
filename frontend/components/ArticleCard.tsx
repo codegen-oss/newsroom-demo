@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaClock, FaUser, FaTag } from 'react-icons/fa';
+import { FaClock, FaUser, FaTag, FaBuilding } from 'react-icons/fa';
 
 interface ArticleCardProps {
   article: {
@@ -14,6 +14,8 @@ interface ArticleCardProps {
     categories: string[];
     access_tier: string;
     featured_image: string;
+    organization_id?: string;
+    organization_name?: string;
   };
 }
 
@@ -68,6 +70,19 @@ export default function ArticleCard({ article }: ArticleCardProps) {
           </div>
         </div>
 
+        {/* Organization badge if applicable */}
+        {article.organization_id && (
+          <div className="mb-2">
+            <Link 
+              href={`/organizations/${article.organization_id}`}
+              className="inline-flex items-center text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+            >
+              <FaBuilding className="mr-1" />
+              {article.organization_name || 'Organization Content'}
+            </Link>
+          </div>
+        )}
+
         <h3 className="text-xl font-semibold mb-2">{article.title}</h3>
         <p className="text-gray-600 mb-4 flex-grow">{article.summary}</p>
 
@@ -94,4 +109,3 @@ export default function ArticleCard({ article }: ArticleCardProps) {
     </div>
   );
 }
-

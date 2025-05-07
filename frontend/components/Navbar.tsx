@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { FaNewspaper, FaUser, FaBars, FaTimes } from 'react-icons/fa';
+import { FaNewspaper, FaUser, FaBars, FaTimes, FaBuilding } from 'react-icons/fa';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -31,6 +31,11 @@ export default function Navbar() {
               <>
                 <Link href="/dashboard" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
                   Dashboard
+                </Link>
+                <Link href="/organizations" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                  <span className="flex items-center">
+                    <FaBuilding className="mr-1" /> Organizations
+                  </span>
                 </Link>
                 <Link href="/profile" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
                   Profile
@@ -88,6 +93,15 @@ export default function Navbar() {
                   Dashboard
                 </Link>
                 <Link
+                  href="/organizations"
+                  className="block py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="flex items-center">
+                    <FaBuilding className="mr-1" /> Organizations
+                  </span>
+                </Link>
+                <Link
                   href="/profile"
                   className="block py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
                   onClick={() => setIsMenuOpen(false)}
@@ -128,4 +142,3 @@ export default function Navbar() {
     </nav>
   );
 }
-

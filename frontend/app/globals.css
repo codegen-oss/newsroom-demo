@@ -46,5 +46,45 @@ body {
   .input {
     @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500;
   }
+  
+  /* Organization-specific styles */
+  .org-badge {
+    @apply inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full;
+  }
+  
+  .org-badge-basic {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .org-badge-premium {
+    @apply bg-purple-100 text-purple-800;
+  }
+  
+  .org-badge-enterprise {
+    @apply bg-blue-100 text-blue-800;
+  }
+  
+  .org-member-role-admin {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+  
+  .org-member-role-member {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .org-member-role-viewer {
+    @apply bg-blue-100 text-blue-800;
+  }
+  
+  .subscription-card {
+    @apply p-4 border rounded-md transition-all duration-200;
+  }
+  
+  .subscription-card-selected {
+    @apply border-primary-500 bg-primary-50;
+  }
+  
+  .subscription-card-default {
+    @apply border-gray-300 hover:border-primary-300;
+  }
 }
-

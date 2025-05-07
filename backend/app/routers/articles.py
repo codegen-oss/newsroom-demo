@@ -4,6 +4,8 @@ from typing import List, Optional
 from ..database.database import get_db
 from ..models.article import Article
 from ..models.user import User
+from ..models.organization import Organization
+from ..models.organization_member import OrganizationMember
 from ..schemas.article import ArticleCreate, ArticleUpdate, ArticleResponse
 from ..auth.auth import get_current_user
 
@@ -15,6 +17,7 @@ async def get_articles(
     limit: int = 10,
     category: Optional[str] = None,
     access_tier: Optional[str] = None,
+    organization_id: Optional[str] = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -26,6 +29,20 @@ async def get_articles(
         # Filter by category (this is a simplification, as categories is a JSON field)
         # In a real implementation, you might need a more complex query or a different DB schema
         query = query.filter(Article.categories.contains([category]))
+    
+    # Filter by organization if specified
+    if organization_id:
+        # Check if user is a member of this organization
+        member = db.query(OrganizationMember).filter(
+            OrganizationMember.organization_id == organization_id,
+            OrganizationMember.user_id == current_user.id,
+            OrganizationMember.is_active == True
+        ).first()
+        
+        if not member:
+            raise HTTPException(status_code=403, detail="You are not a member of this organization")
+        
+        query = query.filter(Article.organization_id == organization_id)
     
     if access_tier:
         # Filter by access tier
@@ -52,7 +69,18 @@ async def get_article(
     if not article:
         raise HTTPException(status_code=404, detail="Article not found")
     
-    # Check if user has access to this article
+    # Check if article belongs to an organization and if user has access
+    if article.organization_id:
+        member = db.query(OrganizationMember).filter(
+            OrganizationMember.organization_id == article.organization_id,
+            OrganizationMember.user_id == current_user.id,
+            OrganizationMember.is_active == True
+        ).first()
+        
+        if not member:
+            raise HTTPException(status_code=403, detail="This content is only available to organization members")
+    
+    # Check if user has access to this article based on subscription tier
     if article.access_tier == "premium" and current_user.subscription_tier == "free":
         raise HTTPException(status_code=403, detail="Premium content requires a paid subscription")
     if article.access_tier == "organization" and current_user.subscription_tier not in ["organization"]:
@@ -66,7 +94,19 @@ async def create_article(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # In a real app, you might want to check if the user has permission to create articles
+    # Check if article is being created for an organization
+    if article.organization_id:
+        # Verify user is an admin of the organization
+        admin = db.query(OrganizationMember).filter(
+            OrganizationMember.organization_id == article.organization_id,
+            OrganizationMember.user_id == current_user.id,
+            OrganizationMember.role == "admin",
+            OrganizationMember.is_active == True
+        ).first()
+        
+        if not admin:
+            raise HTTPException(status_code=403, detail="You must be an admin to create organization content")
+    
     new_article = Article(
         title=article.title,
         content=article.content,
@@ -76,7 +116,8 @@ async def create_article(
         author=article.author,
         categories=article.categories,
         access_tier=article.access_tier,
-        featured_image=article.featured_image
+        featured_image=article.featured_image,
+        organization_id=article.organization_id
     )
     
     db.add(new_article)
@@ -91,10 +132,21 @@ async def update_article(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # In a real app, you might want to check if the user has permission to update articles
     db_article = db.query(Article).filter(Article.id == article_id).first()
     if not db_article:
         raise HTTPException(status_code=404, detail="Article not found")
+    
+    # Check permissions for organization content
+    if db_article.organization_id:
+        admin = db.query(OrganizationMember).filter(
+            OrganizationMember.organization_id == db_article.organization_id,
+            OrganizationMember.user_id == current_user.id,
+            OrganizationMember.role == "admin",
+            OrganizationMember.is_active == True
+        ).first()
+        
+        if not admin:
+            raise HTTPException(status_code=403, detail="You must be an admin to update organization content")
     
     # Update fields if provided
     for field, value in article_update.dict(exclude_unset=True).items():
@@ -110,12 +162,22 @@ async def delete_article(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # In a real app, you might want to check if the user has permission to delete articles
     db_article = db.query(Article).filter(Article.id == article_id).first()
     if not db_article:
         raise HTTPException(status_code=404, detail="Article not found")
     
+    # Check permissions for organization content
+    if db_article.organization_id:
+        admin = db.query(OrganizationMember).filter(
+            OrganizationMember.organization_id == db_article.organization_id,
+            OrganizationMember.user_id == current_user.id,
+            OrganizationMember.role == "admin",
+            OrganizationMember.is_active == True
+        ).first()
+        
+        if not admin:
+            raise HTTPException(status_code=403, detail="You must be an admin to delete organization content")
+    
     db.delete(db_article)
     db.commit()
     return {"message": "Article deleted successfully"}
-

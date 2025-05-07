@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/Navbar';
 import ArticleCard from '@/components/ArticleCard';
-import { articlesApi } from '@/lib/api';
-import { FaFilter, FaSearch, FaSpinner } from 'react-icons/fa';
+import { articlesApi, organizationsApi } from '@/lib/api';
+import { FaFilter, FaSearch, FaSpinner, FaBuilding } from 'react-icons/fa';
+import Link from 'next/link';
 
 interface Article {
   id: string;
@@ -17,14 +18,22 @@ interface Article {
   categories: string[];
   access_tier: string;
   featured_image: string;
+  organization_id?: string;
+}
+
+interface Organization {
+  id: string;
+  name: string;
 }
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedOrganization, setSelectedOrganization] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
@@ -38,11 +47,12 @@ export default function Dashboard() {
       return;
     }
 
-    // Fetch articles
+    // Fetch articles and organizations
     if (isAuthenticated) {
       fetchArticles();
+      fetchOrganizations();
     }
-  }, [isAuthenticated, authLoading, router, selectedCategory]);
+  }, [isAuthenticated, authLoading, router, selectedCategory, selectedOrganization]);
 
   const fetchArticles = async () => {
     setIsLoading(true);
@@ -53,6 +63,10 @@ export default function Dashboard() {
         params.category = selectedCategory;
       }
       
+      if (selectedOrganization) {
+        params.organization_id = selectedOrganization;
+      }
+      
       const response = await articlesApi.getArticles(params);
       setArticles(response.data);
     } catch (err) {
@@ -60,6 +74,15 @@ export default function Dashboard() {
       setError('Failed to load articles. Please try again later.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchOrganizations = async () => {
+    try {
+      const response = await organizationsApi.getOrganizations();
+      setOrganizations(response.data);
+    } catch (err) {
+      console.error('Error fetching organizations:', err);
     }
   };
 
@@ -124,6 +147,27 @@ export default function Dashboard() {
                 ))}
               </select>
             </div>
+            
+            {/* Organization filter */}
+            {organizations.length > 0 && (
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaBuilding className="text-gray-400" />
+                </div>
+                <select
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                  value={selectedOrganization}
+                  onChange={(e) => setSelectedOrganization(e.target.value)}
+                >
+                  <option value="">All Organizations</option>
+                  {organizations.map((org) => (
+                    <option key={org.id} value={org.id}>
+                      {org.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </div>
 
@@ -149,6 +193,14 @@ export default function Dashboard() {
                 ? 'You have access to all free and premium articles. Thank you for your subscription!' 
                 : 'You have access to all content including organization-exclusive articles.'}
           </p>
+          
+          {user?.subscription_tier === 'free' && (
+            <div className="mt-2">
+              <Link href="/organizations" className="text-primary-600 hover:text-primary-800 font-medium">
+                Create or join an organization for exclusive content →
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Error message */}
@@ -183,4 +235,3 @@ export default function Dashboard() {
     </div>
   );
 }
-

@@ -12,6 +12,7 @@ class ArticleBase(BaseModel):
     categories: List[str] = []
     access_tier: str = "free"
     featured_image: Optional[str] = None
+    organization_id: Optional[str] = None
 
 class ArticleCreate(ArticleBase):
     pass
@@ -26,6 +27,7 @@ class ArticleUpdate(BaseModel):
     categories: Optional[List[str]] = None
     access_tier: Optional[str] = None
     featured_image: Optional[str] = None
+    organization_id: Optional[str] = None
 
 class ArticleResponse(ArticleBase):
     id: str
@@ -34,3 +36,8 @@ class ArticleResponse(ArticleBase):
     class Config:
         orm_mode = True
 
+class OrganizationArticleResponse(ArticleResponse):
+    organization_name: Optional[str] = None
+    
+    class Config:
+        orm_mode = True
