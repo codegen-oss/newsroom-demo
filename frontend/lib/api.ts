@@ -66,11 +66,21 @@ export const userApi = {
 
 // Articles endpoints
 export const articlesApi = {
-  getArticles: (params?: any) => api.get('/articles', { params }),
+  getArticles: (params?: any) => {
+    // Check if there's a special endpoint like 'recommended' or 'popular'
+    if (params && params.endpoint) {
+      const endpoint = params.endpoint;
+      delete params.endpoint;
+      return api.get(`/articles/${endpoint}`, { params });
+    }
+    return api.get('/articles', { params });
+  },
   getArticle: (id: string) => api.get(`/articles/${id}`),
   createArticle: (article: any) => api.post('/articles', article),
   updateArticle: (id: string, article: any) => api.put(`/articles/${id}`, article),
   deleteArticle: (id: string) => api.delete(`/articles/${id}`),
+  getRecommendedArticles: (params?: any) => api.get('/articles/recommended', { params }),
+  getPopularArticles: (params?: any) => api.get('/articles/popular', { params }),
 };
 
 // Organizations endpoints
@@ -88,4 +98,3 @@ export const organizationsApi = {
 };
 
 export default api;
-
