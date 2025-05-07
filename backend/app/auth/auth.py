@@ -9,9 +9,12 @@ from ..database.database import get_db
 from ..models.user import User
 from ..schemas.token import Token, TokenData
 from ..schemas.user import UserCreate, UserResponse
+import os
+from pydantic import EmailStr, ValidationError
 
 # JWT Configuration
-SECRET_KEY = "YOUR_SECRET_KEY"  # In production, use a secure key and store in environment variables
+# In production, use a secure key and store in environment variables
+SECRET_KEY = os.environ.get("SECRET_KEY", "YOUR_SECRET_KEY")  
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -65,10 +68,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
+    
     user = get_user(db, email=token_data.email)
     if user is None:
         raise credentials_exception
     return user
+
+async def get_current_active_user(current_user: User = Depends(get_current_user)):
+    # You could add additional checks here, like checking if the user is active
+    return current_user
 
 # Routes
 @router.post("/token", response_model=Token)
@@ -86,12 +94,38 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.post("/register", response_model=UserResponse)
+@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    # Validate email format
+    try:
+        EmailStr.validate(user.email)
+    except ValidationError:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Invalid email format")
+    
+    # Check if email already exists
     db_user = get_user(db, email=user.email)
     if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Email already registered"
+        )
     
+    # Validate password strength (minimum 8 characters)
+    if len(user.password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Password must be at least 8 characters long"
+        )
+    
+    # Validate subscription tier
+    valid_tiers = ["free", "individual", "organization"]
+    if user.subscription_tier not in valid_tiers:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"Invalid subscription tier. Must be one of: {', '.join(valid_tiers)}"
+        )
+    
+    # Create new user
     hashed_password = get_password_hash(user.password)
     new_user = User(
         email=user.email,
@@ -100,9 +134,14 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
         subscription_tier=user.subscription_tier
     )
     
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    
-    return new_user
-
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return new_user
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create user: {str(e)}"
+        )
