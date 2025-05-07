@@ -2,7 +2,11 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { FaClock, FaUser, FaTag } from 'react-icons/fa';
+import { accessTierStyles, getCategoryColor } from '@/lib/theme';
+import Badge from '@/components/ui/Badge';
+import Card from '@/components/ui/Card';
 
 interface ArticleCardProps {
   article: {
@@ -28,31 +32,43 @@ export default function ArticleCard({ article }: ArticleCardProps) {
     });
   };
 
+  // Get access tier styles
+  const tierStyle = accessTierStyles[article.access_tier as keyof typeof accessTierStyles] || 
+                    accessTierStyles.free;
+
   return (
-    <div className="card h-full flex flex-col">
+    <Card className="h-full flex flex-col">
       {/* Access tier badge */}
       <div className="absolute top-2 right-2 z-10">
-        <span 
-          className={`text-xs font-semibold px-2 py-1 rounded-full ${
+        <Badge 
+          variant={
             article.access_tier === 'free' 
-              ? 'bg-green-100 text-green-800' 
+              ? 'success' 
               : article.access_tier === 'premium' 
-                ? 'bg-purple-100 text-purple-800' 
-                : 'bg-blue-100 text-blue-800'
-          }`}
+                ? 'secondary' 
+                : 'info'
+          }
+          size="sm"
         >
           {article.access_tier.charAt(0).toUpperCase() + article.access_tier.slice(1)}
-        </span>
+        </Badge>
       </div>
 
-      {/* Featured image */}
-      <div className="relative h-48 w-full">
-        <Image
-          src={article.featured_image || '/images/placeholder.jpg'}
-          alt={article.title}
-          fill
-          style={{ objectFit: 'cover' }}
-        />
+      {/* Featured image with hover zoom effect */}
+      <div className="relative h-48 w-full overflow-hidden">
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.3 }}
+          className="h-full w-full"
+        >
+          <Image
+            src={article.featured_image || '/images/placeholder.jpg'}
+            alt={article.title}
+            fill
+            style={{ objectFit: 'cover' }}
+            className="transition-all duration-300"
+          />
+        </motion.div>
       </div>
 
       {/* Content */}
@@ -68,30 +84,35 @@ export default function ArticleCard({ article }: ArticleCardProps) {
           </div>
         </div>
 
-        <h3 className="text-xl font-semibold mb-2">{article.title}</h3>
-        <p className="text-gray-600 mb-4 flex-grow">{article.summary}</p>
+        <h3 className="text-xl font-semibold mb-2 line-clamp-2 hover:text-primary-600 transition-colors">
+          {article.title}
+        </h3>
+        
+        <p className="text-gray-600 mb-4 flex-grow line-clamp-3">
+          {article.summary}
+        </p>
 
         {/* Categories */}
         <div className="flex flex-wrap gap-1 mb-4">
           {article.categories.map((category, index) => (
-            <span 
+            <Badge
               key={index}
-              className="inline-flex items-center text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full"
+              className={getCategoryColor(category)}
+              size="sm"
+              icon={<FaTag />}
             >
-              <FaTag className="mr-1" />
               {category}
-            </span>
+            </Badge>
           ))}
         </div>
 
         <Link 
           href={`/articles/${article.id}`}
-          className="btn-primary text-center"
+          className="btn-primary text-center py-2 px-4 rounded-md bg-primary-600 hover:bg-primary-700 text-white transition-colors"
         >
           Read More
         </Link>
       </div>
-    </div>
+    </Card>
   );
 }
-
