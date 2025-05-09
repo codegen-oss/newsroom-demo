@@ -1,0 +1,54 @@
+[
+  {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "email": "admin@newsroom.com",
+    "passwordHash": "$2a$10$XgXB8OMM3QN8yCzUEVUoIeRRjJ5SJC1JGhJx1vLxK6.OuZmjXhWjm",
+    "displayName": "Admin User",
+    "profileImage": "https://randomuser.me/api/portraits/men/1.jpg",
+    "subscriptionTier": "organization",
+    "subscriptionStatus": "active",
+    "subscriptionExpiry": "2026-01-01T00:00:00.000Z",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "lastLogin": "2025-05-01T00:00:00.000Z",
+    "preferences": {
+      "theme": "dark",
+      "notifications": true,
+      "emailFrequency": "daily"
+    }
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000002",
+    "email": "user@example.com",
+    "passwordHash": "$2a$10$XgXB8OMM3QN8yCzUEVUoIeRRjJ5SJC1JGhJx1vLxK6.OuZmjXhWjm",
+    "displayName": "Regular User",
+    "profileImage": "https://randomuser.me/api/portraits/women/1.jpg",
+    "subscriptionTier": "individual",
+    "subscriptionStatus": "active",
+    "subscriptionExpiry": "2026-01-01T00:00:00.000Z",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "lastLogin": "2025-05-01T00:00:00.000Z",
+    "preferences": {
+      "theme": "light",
+      "notifications": true,
+      "emailFrequency": "weekly"
+    }
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000003",
+    "email": "free@example.com",
+    "passwordHash": "$2a$10$XgXB8OMM3QN8yCzUEVUoIeRRjJ5SJC1JGhJx1vLxK6.OuZmjXhWjm",
+    "displayName": "Free User",
+    "profileImage": null,
+    "subscriptionTier": "free",
+    "subscriptionStatus": "active",
+    "subscriptionExpiry": null,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "lastLogin": "2025-05-01T00:00:00.000Z",
+    "preferences": {
+      "theme": "light",
+      "notifications": false,
+      "emailFrequency": "none"
+    }
+  }
+]
+
