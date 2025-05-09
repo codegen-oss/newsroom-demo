@@ -1,58 +1,172 @@
+'use client';
+
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTheme } from '@/components/providers/ThemeProvider';
+import { FiSun, FiMoon, FiMenu, FiX, FiSearch, FiUser, FiHome, FiFileText, FiBriefcase } from 'react-icons/fi';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 left-0 border-b border-gray-200 dark:border-gray-600">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <Link href="/" className="flex items-center">
-          <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">News Room</span>
-        </Link>
-        <div className="flex md:order-2">
-          <Link href="/profile">
-            <button type="button" className="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-              Sign In
-            </button>
-          </Link>
-          <button 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            type="button" 
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-          >
-            <span className="sr-only">Open main menu</span>
-            <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h15M1 7h15M1 13h15"/>
-            </svg>
-          </button>
-        </div>
-        <div className={`items-center justify-between w-full md:flex md:w-auto md:order-1 ${isMenuOpen ? 'block' : 'hidden'}`}>
-          <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-            <li>
-              <Link href="/dashboard" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary-700 md:p-0 md:dark:hover:text-primary-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+    <nav 
+      className={`fixed w-full z-30 top-0 left-0 transition-all duration-300 ${
+        scrolled 
+          ? 'glass shadow-glass-lg' 
+          : 'bg-transparent'
+      }`}
+      aria-label="Main navigation"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo and brand */}
+          <div className="flex-shrink-0 flex items-center">
+            <Link href="/" className="flex items-center" aria-label="News Room Home">
+              <span className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-accent-500 text-transparent bg-clip-text">
+                News Room
+              </span>
+            </Link>
+          </div>
+
+          {/* Desktop navigation */}
+          <div className="hidden md:block">
+            <div className="ml-10 flex items-center space-x-4">
+              <Link 
+                href="/dashboard" 
+                className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-dark-200 transition-colors duration-200 focus-visible-outline"
+                aria-label="Dashboard"
+              >
+                <FiHome className="mr-1.5" />
                 Dashboard
               </Link>
-            </li>
-            <li>
-              <Link href="/article" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary-700 md:p-0 md:dark:hover:text-primary-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+              <Link 
+                href="/article" 
+                className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-dark-200 transition-colors duration-200 focus-visible-outline"
+                aria-label="Articles"
+              >
+                <FiFileText className="mr-1.5" />
                 Articles
               </Link>
-            </li>
-            <li>
-              <Link href="/search" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary-700 md:p-0 md:dark:hover:text-primary-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+              <Link 
+                href="/search" 
+                className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-dark-200 transition-colors duration-200 focus-visible-outline"
+                aria-label="Search"
+              >
+                <FiSearch className="mr-1.5" />
                 Search
               </Link>
-            </li>
-            <li>
-              <Link href="/organization" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary-700 md:p-0 md:dark:hover:text-primary-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+              <Link 
+                href="/organization" 
+                className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-dark-200 transition-colors duration-200 focus-visible-outline"
+                aria-label="Organization"
+              >
+                <FiBriefcase className="mr-1.5" />
                 Organization
               </Link>
-            </li>
-          </ul>
+            </div>
+          </div>
+
+          {/* Right side buttons */}
+          <div className="flex items-center">
+            {/* Theme toggle button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-dark-200 transition-colors duration-200 focus-visible-outline mr-2"
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? <FiSun className="h-5 w-5" /> : <FiMoon className="h-5 w-5" />}
+            </button>
+
+            {/* Sign in button */}
+            <Link href="/profile">
+              <button 
+                type="button" 
+                className="btn btn-primary flex items-center"
+                aria-label="Sign In"
+              >
+                <FiUser className="mr-1.5" />
+                Sign In
+              </button>
+            </Link>
+
+            {/* Mobile menu button */}
+            <div className="flex md:hidden ml-3">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                type="button"
+                className="p-2 rounded-md text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-dark-200 transition-colors duration-200 focus-visible-outline"
+                aria-expanded={isMenuOpen}
+                aria-controls="mobile-menu"
+                aria-label="Toggle menu"
+              >
+                <span className="sr-only">Open main menu</span>
+                {isMenuOpen ? (
+                  <FiX className="h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <FiMenu className="h-6 w-6" aria-hidden="true" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <div
+        className={`${isMenuOpen ? 'block' : 'hidden'} md:hidden glass mt-2 mx-4 rounded-lg overflow-hidden transition-all duration-300`}
+        id="mobile-menu"
+      >
+        <div className="px-2 pt-2 pb-3 space-y-1">
+          <Link
+            href="/dashboard"
+            className="flex items-center px-3 py-2 rounded-md text-base font-medium text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-dark-200 transition-colors duration-200 w-full"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FiHome className="mr-2" />
+            Dashboard
+          </Link>
+          <Link
+            href="/article"
+            className="flex items-center px-3 py-2 rounded-md text-base font-medium text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-dark-200 transition-colors duration-200 w-full"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FiFileText className="mr-2" />
+            Articles
+          </Link>
+          <Link
+            href="/search"
+            className="flex items-center px-3 py-2 rounded-md text-base font-medium text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-dark-200 transition-colors duration-200 w-full"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FiSearch className="mr-2" />
+            Search
+          </Link>
+          <Link
+            href="/organization"
+            className="flex items-center px-3 py-2 rounded-md text-base font-medium text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-dark-200 transition-colors duration-200 w-full"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FiBriefcase className="mr-2" />
+            Organization
+          </Link>
         </div>
       </div>
     </nav>
   );
 }
-

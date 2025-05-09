@@ -2,18 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Roboto+Mono&display=swap');
+
 :root {
-  --foreground-rgb: 0, 0, 0;
+  /* Light mode variables */
+  --foreground-rgb: 30, 30, 60;
   --background-start-rgb: 250, 250, 255;
   --background-end-rgb: 240, 240, 255;
+  
+  /* Glassmorphism variables */
+  --glass-background: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 20, 20, 40;
-    --background-end-rgb: 10, 10, 30;
-  }
+.dark {
+  /* Dark mode variables */
+  --foreground-rgb: 240, 240, 255;
+  --background-start-rgb: 26, 26, 46;
+  --background-end-rgb: 16, 16, 36;
+  
+  /* Dark mode glassmorphism */
+  --glass-background: rgba(20, 20, 40, 0.7);
+  --glass-border: rgba(30, 30, 60, 0.18);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
 body {
@@ -24,11 +37,117 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* Glassmorphism components */
+.glass {
+  background: var(--glass-background);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.glass:hover {
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+  transform: translateY(-2px);
+}
+
+.glass-card {
+  @apply glass p-6 transition-all duration-300;
+}
+
+/* Neon effects */
+.neon-border {
+  box-shadow: 0 0 5px theme('colors.electric.blue'), 0 0 20px theme('colors.electric.blue');
+}
+
+.neon-text {
+  text-shadow: 0 0 5px theme('colors.electric.blue'), 0 0 10px theme('colors.electric.blue');
+}
+
+.neon-purple-text {
+  text-shadow: 0 0 5px theme('colors.electric.purple'), 0 0 10px theme('colors.electric.purple');
+}
+
+/* Animations */
+.hover-float {
+  transition: transform 0.3s ease;
+}
+
+.hover-float:hover {
+  transform: translateY(-5px);
+}
+
+/* Accessibility */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+  
+  .focus-visible-outline {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-100;
+  }
+  
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-white focus:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500;
+  }
 }
 
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(var(--background-start-rgb), 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: theme('colors.primary.400');
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.primary.500');
+}
+
+/* Button styles */
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-300 focus-visible-outline;
+}
+
+.btn-primary {
+  @apply bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800;
+}
+
+.btn-accent {
+  @apply bg-accent-600 text-white hover:bg-accent-700 active:bg-accent-800;
+}
+
+.btn-ghost {
+  @apply bg-transparent hover:bg-gray-100 dark:hover:bg-dark-200 text-primary-700 dark:text-primary-300;
+}
+
+.btn-glass {
+  @apply glass text-primary-700 dark:text-primary-300 hover:shadow-lg;
+}
+
+/* Form elements */
+.input {
+  @apply px-4 py-2 rounded-lg border border-gray-300 dark:border-dark-300 bg-white dark:bg-dark-200 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-300;
+}
+
+/* Card styles */
+.card {
+  @apply rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg;
+}
+
+.news-card {
+  @apply glass-card hover:shadow-lg;
+}
