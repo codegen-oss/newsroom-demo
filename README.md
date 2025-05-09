@@ -9,6 +9,7 @@ A modern, full-stack web application for managing and displaying news articles. 
 - **Organization System**: Manage content across different organizations
 - **News Feed**: Personalized news feed based on user preferences
 - **Responsive UI**: Modern interface that works on all devices
+- **User Preferences**: Customizable reading experience
 
 ## 🛠️ Tech Stack
 
