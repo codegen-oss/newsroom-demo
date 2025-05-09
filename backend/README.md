@@ -120,3 +120,7 @@ Redis is used for caching and session management, including:
 - Rate limiting
 - User preferences
 
+## Additional Information
+
+For more details on the database schema implementation, please refer to the schema files in the `schemas` directory.
+
