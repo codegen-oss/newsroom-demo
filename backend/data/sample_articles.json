@@ -1,0 +1,63 @@
+[
+  {
+    "title": "Global Economic Outlook 2025",
+    "content": "The global economy is expected to grow by 3.5% in 2025, according to the latest projections from the International Monetary Fund (IMF). This represents a slight increase from the 3.2% growth rate observed in 2024.\n\nDeveloped economies are projected to see moderate growth of around 2.1%, while emerging markets and developing economies are expected to grow at a more robust rate of 4.7%.\n\nKey factors influencing the economic outlook include:\n\n1. Technological innovation and digital transformation\n2. Climate change policies and green investments\n3. Geopolitical tensions and trade policies\n4. Post-pandemic recovery and supply chain resilience\n\nThe IMF warns that risks remain tilted to the downside, with potential challenges arising from new virus variants, inflation pressures, and financial market volatility.",
+    "summary": "IMF projects 3.5% global economic growth in 2025, with developed economies at 2.1% and emerging markets at 4.7%. Key factors include tech innovation, climate policies, geopolitics, and post-pandemic recovery.",
+    "source": "International Monetary Fund",
+    "source_url": "https://www.imf.org/en/Publications/WEO",
+    "author": "IMF Research Department",
+    "published_at": "2025-01-15T10:00:00Z",
+    "categories": ["Economy", "Global", "Finance"],
+    "access_tier": "free",
+    "featured_image": "https://example.com/images/global-economy-2025.jpg"
+  },
+  {
+    "title": "Breakthrough in Quantum Computing Achieved",
+    "content": "Scientists at the Quantum Research Institute have achieved a major breakthrough in quantum computing, successfully demonstrating quantum supremacy with a 1,000-qubit processor.\n\nThe new quantum computer, named 'Quantum Horizon', was able to solve a complex problem in just 3 minutes that would take the world's fastest supercomputer approximately 10,000 years to complete.\n\nThis achievement marks a significant milestone in the field of quantum computing and brings us closer to practical applications in areas such as:\n\n- Drug discovery and development\n- Climate modeling and weather prediction\n- Financial market analysis and optimization\n- Cryptography and security systems\n- Artificial intelligence and machine learning\n\nDr. Sarah Chen, lead researcher on the project, stated: \"This is just the beginning. We expect quantum computers to revolutionize numerous industries within the next decade.\"",
+    "summary": "Scientists demonstrate quantum supremacy with a 1,000-qubit processor that solved in 3 minutes what would take supercomputers 10,000 years, opening doors for applications in drug discovery, climate modeling, finance, cryptography, and AI.",
+    "source": "Quantum Research Institute",
+    "source_url": "https://example.com/quantum-breakthrough",
+    "author": "Dr. Sarah Chen",
+    "published_at": "2025-02-22T14:30:00Z",
+    "categories": ["Technology", "Science", "Computing"],
+    "access_tier": "premium",
+    "featured_image": "https://example.com/images/quantum-computer.jpg"
+  },
+  {
+    "title": "New Geopolitical Alliance Reshapes Asian Power Dynamics",
+    "content": "A new strategic alliance between India, Japan, Australia, and South Korea was announced today, creating what analysts are calling the 'Asian Quadrilateral Security Dialogue Plus' or 'Quad Plus'.\n\nThe alliance, which builds upon the existing Quadrilateral Security Dialogue (Quad) between the US, India, Japan, and Australia, aims to enhance regional security cooperation, economic integration, and technological collaboration across the Indo-Pacific region.\n\nKey aspects of the alliance include:\n\n1. Joint naval exercises and maritime security operations\n2. Shared intelligence and cybersecurity frameworks\n3. Supply chain resilience initiatives for critical technologies\n4. Coordinated infrastructure investments across Southeast Asia\n5. Climate change mitigation and disaster response protocols\n\nChinese officials have expressed concern about the new alliance, describing it as an attempt to contain China's influence in the region. However, member nations have emphasized that the alliance is not directed against any specific country but rather focused on promoting a \"free, open, and inclusive Indo-Pacific.\"",
+    "summary": "India, Japan, Australia, and South Korea form 'Quad Plus' alliance for security, economic, and tech collaboration in Indo-Pacific, featuring naval exercises, intelligence sharing, supply chain initiatives, infrastructure investments, and climate response.",
+    "source": "International Affairs Institute",
+    "source_url": "https://example.com/asian-alliance",
+    "author": "Dr. Michael Wong",
+    "published_at": "2025-03-10T09:15:00Z",
+    "categories": ["Geopolitics", "Asia", "International Relations"],
+    "access_tier": "organization",
+    "featured_image": "https://example.com/images/asian-alliance-summit.jpg"
+  },
+  {
+    "title": "Renewable Energy Surpasses Fossil Fuels Globally",
+    "content": "For the first time in modern history, renewable energy sources have generated more electricity globally than fossil fuels, according to the International Energy Agency (IEA).\n\nThe milestone, reached in the first quarter of 2025, saw renewable sources including solar, wind, hydroelectric, and geothermal power produce 52% of global electricity, compared to 48% from coal, natural gas, and oil.\n\nThis transition has been accelerated by:\n\n- Dramatic cost reductions in solar and wind technologies\n- Increased energy storage capacity through advanced battery systems\n- Supportive government policies and carbon pricing mechanisms\n- Growing corporate commitments to clean energy procurement\n- Consumer demand for sustainable energy options\n\n\"This is a historic turning point in the global energy transition,\" said IEA Executive Director Fatih Birol. \"While challenges remain, particularly in hard-to-decarbonize sectors, the momentum behind clean energy is now unstoppable.\"",
+    "summary": "Renewable energy sources generated 52% of global electricity in Q1 2025, surpassing fossil fuels for the first time, driven by cost reductions, improved storage, supportive policies, corporate commitments, and consumer demand.",
+    "source": "International Energy Agency",
+    "source_url": "https://example.com/renewable-milestone",
+    "author": "IEA Research Team",
+    "published_at": "2025-04-05T11:45:00Z",
+    "categories": ["Energy", "Environment", "Technology"],
+    "access_tier": "free",
+    "featured_image": "https://example.com/images/renewable-energy-global.jpg"
+  },
+  {
+    "title": "Artificial General Intelligence: Ethical Framework Established",
+    "content": "The United Nations has adopted the first global ethical framework for Artificial General Intelligence (AGI), establishing principles and guidelines for the development and deployment of advanced AI systems with human-level or superhuman capabilities.\n\nThe framework, developed through a multi-year consultation process involving governments, technology companies, academic institutions, and civil society organizations, addresses key concerns including:\n\n1. Safety and control mechanisms\n2. Transparency and explainability requirements\n3. Equitable access and benefits distribution\n4. Human oversight and intervention protocols\n5. Liability and accountability structures\n6. Long-term existential risk management\n\nThe framework introduces a tiered regulatory approach based on AI capability levels, with more stringent requirements for systems approaching or exceeding AGI thresholds.\n\n\"This represents a crucial step in ensuring that advanced AI systems are developed responsibly and aligned with human values and interests,\" said UN Secretary-General António Guterres. \"As we enter the era of increasingly capable AI, international cooperation on governance has never been more important.\"",
+    "summary": "UN adopts first global ethical framework for AGI, establishing principles for safety, transparency, equity, oversight, accountability, and risk management, with tiered regulations based on AI capability levels.",
+    "source": "United Nations",
+    "source_url": "https://example.com/agi-ethics-framework",
+    "author": "UN AI Ethics Committee",
+    "published_at": "2025-05-12T16:20:00Z",
+    "categories": ["Technology", "Ethics", "Artificial Intelligence"],
+    "access_tier": "premium",
+    "featured_image": "https://example.com/images/ai-ethics-summit.jpg"
+  }
+]
+
