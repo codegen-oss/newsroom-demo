@@ -3,18 +3,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { FaLock } from 'react-icons/fa'
+import { motion } from 'framer-motion'
+import Card from '@/components/ui/Card'
+import Badge from '@/components/ui/Badge'
+import { Article } from '@/lib/articles/ArticlesContext'
 
 interface ArticleCardProps {
-  article: {
-    id: string
-    title: string
-    summary: string
-    author: string
-    published_at: string
-    categories: string[]
-    access_tier: 'free' | 'premium' | 'organization'
-    featured_image: string
-  }
+  article: Article
 }
 
 export default function ArticleCard({ article }: ArticleCardProps) {
@@ -28,24 +23,28 @@ export default function ArticleCard({ article }: ArticleCardProps) {
     }).format(date)
   }
 
-  // Get access tier badge color
+  // Get access tier badge
   const getAccessTierBadge = () => {
     switch (article.access_tier) {
       case 'free':
         return null // No badge for free articles
       case 'premium':
         return (
-          <span className="badge badge-primary flex items-center">
-            <FaLock className="mr-1 h-3 w-3" />
+          <Badge 
+            variant="primary" 
+            icon={<FaLock className="mr-1 h-3 w-3" />}
+          >
             Premium
-          </span>
+          </Badge>
         )
       case 'organization':
         return (
-          <span className="badge badge-secondary flex items-center">
-            <FaLock className="mr-1 h-3 w-3" />
+          <Badge 
+            variant="secondary" 
+            icon={<FaLock className="mr-1 h-3 w-3" />}
+          >
             Organization
-          </span>
+          </Badge>
         )
       default:
         return null
@@ -53,7 +52,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
   }
 
   return (
-    <div className="card h-full flex flex-col">
+    <Card variant="bordered" isHoverable className="h-full flex flex-col">
       <div className="relative h-48 w-full">
         {article.featured_image ? (
           <Image
@@ -68,9 +67,9 @@ export default function ArticleCard({ article }: ArticleCardProps) {
         {/* Categories */}
         <div className="absolute top-2 left-2 flex flex-wrap gap-1">
           {article.categories.slice(0, 2).map((category, index) => (
-            <span key={index} className="badge bg-dark-800/80 text-white">
+            <Badge key={index} variant="default" size="sm">
               {category}
-            </span>
+            </Badge>
           ))}
         </div>
         {/* Access tier badge */}
@@ -95,7 +94,6 @@ export default function ArticleCard({ article }: ArticleCardProps) {
           <span>{formatDate(article.published_at)}</span>
         </div>
       </div>
-    </div>
+    </Card>
   )
 }
-
