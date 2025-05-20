@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, Roboto_Mono } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/lib/auth/AuthContext'
+import { ArticlesProvider } from '@/lib/articles/ArticlesContext'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -29,10 +30,11 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${robotoMono.variable}`}>
       <body className="bg-dark-950 text-white min-h-screen">
         <AuthProvider>
-          {children}
+          <ArticlesProvider>
+            {children}
+          </ArticlesProvider>
         </AuthProvider>
       </body>
     </html>
   )
 }
-
